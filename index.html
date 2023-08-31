@@ -11,22 +11,51 @@
     <link rel="stylesheet" href="api.css">
 </head>
 <body>
+    <select name="locations" id="current-location" >
+        <option value="" selected disabled>Select location</option>
+        <option value="mangalore">Mangalore</option>
+        <option value="bangalore">Bangalore</option>
+        <option value="delhi">Delhi</option>
+        <option value="udupi">Udupi</option>
+        <option value="goa">Goa</option>
+    </select>
     <div class="container">
         <div class="card">
-            <h2 ><i class="fa fa-map-maker"></i><ion-icon name="location-outline" id="loc"></ion-icon><span id="location"></span></h2>
-            <h6 id="weather"></h6>
+            <h2 ><i class="fa fa-map-maker"></i><ion-icon name="location-outline" id="loc"></ion-icon><span id="location">&nbsp;</span></h2>
+            <h6 id="weather">&nbsp;</h6>
             <h4><span id="temp"></span><sup>o</sup>C</h4>
             <img src="" id="icon">
-            <button onclick="window.location.reload()" class="refresh"><i class="fa fa-refresh"></i></button>
+            <button onclick="reload()" class="refresh"><i class="fa fa-refresh"></i></button>
         </div>
     </div>
 </body>
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.7.1.js" ></script>
 <script>
-    link="https://api.openweathermap.org/data/2.5/weather?q=mangalore&appid=16ceadba7c6352e67db68a928f4d555a";
-    var request = new XMLHttpRequest();
-    request.open('GET',link,true);
-    request.onload = function(){
+    var curCity;
+    function setNull(){
+        document.getElementById('weather').innerHTML = "";
+        document.getElementById('location').innerHTML = "";
+        document.getElementById('temp').innerHTML = ""
+        document.getElementById('icon').src = "";
+    }
+    function reload(){
+        if(curCity==undefined)return;
+        setNull();
+        weatherTrack(curCity);
+    }
+    const currentLocation = document.getElementById('current-location');
+    currentLocation.addEventListener("input",()=>{
+        curCity = currentLocation.value;
+        if(curCity == "" || curCity == undefined){
+            setNull();
+        } 
+        weatherTrack(currentLocation.value);
+    })
+    function weatherTrack(city){
+        link=`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=16ceadba7c6352e67db68a928f4d555a`;
+        var request = new XMLHttpRequest();
+        request.open('GET',link,true);
+        request.onload = function(){
         var obj = JSON.parse(this.response);
         console.log(obj);
         document.getElementById('weather').innerHTML = obj.weather[0].description;
@@ -42,6 +71,8 @@
         console.log("The city data is not available");
     }
     request.send();
+    }
+    
 </script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
